@@ -56,4 +56,4 @@ jobs:
       if: always()
       with:
         name: mcmmo
-        path: ${{ github.workspace }}/mcMMO/target/*.jar
+        path: ${{ github.workspace }}/target/*.jar
