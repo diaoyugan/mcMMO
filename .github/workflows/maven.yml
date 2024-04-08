@@ -50,3 +50,10 @@ jobs:
     # 4. Build via Maven 
     - name: Build via Maven
       run: mvn verify -B --file pom.xml -DdisableXmlReport=true
+
+    - name : upload jar file
+      uses: actions/upload-artifact@master
+      if: always()
+      with:
+        name: mcmmo
+        path: ${{ github.workspace }}/mcMMO/target/*.jar
