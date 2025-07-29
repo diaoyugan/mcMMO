@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gmail.nossr50.mcMMO</groupId>
     <artifactId>mcMMO</artifactId>
-    <version>2.2.019-SNAPSHOT</version>
+    <version>2.2.041-SNAPSHOT</version>
     <name>mcMMO</name>
     <url>https://github.com/mcMMO-Dev/mcMMO</url>
     <scm>
@@ -13,6 +13,11 @@
     </scm>
 
     <properties>
+<!--        <spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>-->
+        <spigot.version>1.21.7-R0.1-SNAPSHOT</spigot.version>
+        <kyori.adventure.version>4.23.0</kyori.adventure.version>
+        <kyori.adventure.platform.version>4.4.1-SNAPSHOT</kyori.adventure.platform.version>
+        <kyori.option.version>1.1.0</kyori.option.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -74,6 +79,15 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <propertiesEncoding>UTF-8</propertiesEncoding>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
 
@@ -86,13 +100,11 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
-
                 <configuration>
                     <junitArtifactName>org.junit.jupiter:junit-jupiter</junitArtifactName>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -149,6 +161,7 @@
                             <include>net.kyori:adventure-platform-facet</include>
                             <include>net.kyori:adventure-platform-viaversion</include>
                             <include>net.kyori:adventure-text-serializer-bungeecord</include>
+                            <include>net.kyori:adventure-text-serializer-commons</include>
                             <include>net.kyori:adventure-text-serializer-gson</include>
                             <include>net.kyori:adventure-text-serializer-gson-legacy-impl</include>
                             <include>net.kyori:adventure-text-serializer-json</include>
@@ -256,14 +269,18 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
-        <repository>
-            <id>devmart-other</id>
-            <url>https://nexuslite.gcnt.net/repos/other/</url>
-        </repository>
         <!-- MockBukkit -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>tcoded-releases</id>
+            <url>https://repo.tcoded.com/releases/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -277,7 +294,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>LATEST</version>
+            <version>5.3.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -289,7 +306,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.3</version>
+            <version>2.11.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -300,67 +317,67 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-bungeecord</artifactId>
-            <version>4.3.2</version>
+            <version>${kyori.adventure.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson-legacy-impl</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-json</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-json-legacy-impl</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-key</artifactId>
-            <version>4.17.0</version>
+            <version>${kyori.adventure.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-api</artifactId>
-            <version>4.3.3</version>
+            <version>${kyori.adventure.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bukkit</artifactId>
-            <version>LATEST</version>
+            <version>${kyori.adventure.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-facet</artifactId>
-            <version>4.3.3</version>
+            <version>${kyori.adventure.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-viaversion</artifactId>
-            <version>4.3.3</version>
+            <version>${kyori.adventure.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>option</artifactId>
-            <version>1.0.0</version>
+            <version>${kyori.option.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.scm</groupId>
@@ -373,10 +390,15 @@
             <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.papermc.paper</groupId>-->
+<!--            <artifactId>paper-api</artifactId>-->
+<!--            <version>1.21.5-R0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>${spigot.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -447,32 +469,8 @@
         <dependency>
             <groupId>com.tcoded</groupId>
             <artifactId>FoliaLib</artifactId>
-            <version>0.3.1</version>
+            <version>0.5.1</version>
             <scope>compile</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-core</artifactId>-->
-<!--            <version>2.22.1</version> &lt;!&ndash; Make sure this version matches the other log4j dependencies &ndash;&gt;-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-api</artifactId>-->
-<!--            <version>2.22.1</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-slf4j-impl</artifactId>-->
-<!--            <version>2.22.1</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.seeseemelk</groupId>-->
-<!--            <artifactId>MockBukkit-v1.19</artifactId>-->
-<!--            <version>LATEST</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
     </dependencies>
 </project>

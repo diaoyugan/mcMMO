@@ -6,8 +6,9 @@ import com.gmail.nossr50.util.BlockUtils;
 import com.gmail.nossr50.util.Permissions;
 import com.gmail.nossr50.util.text.StringUtils;
 import org.bukkit.Material;
-import org.bukkit.block.BlockState;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public enum SuperAbilityType {
     EXPLOSIVE_SHOT("Archery.Skills.ExplosiveShot.On",
@@ -111,14 +112,14 @@ public enum SuperAbilityType {
      */
     // TODO: This is stupid
     static {
-        BERSERK.subSkillTypeDefinition              = SubSkillType.UNARMED_BERSERK;
-        SUPER_BREAKER.subSkillTypeDefinition        = SubSkillType.MINING_SUPER_BREAKER;
-        GIGA_DRILL_BREAKER.subSkillTypeDefinition   = SubSkillType.EXCAVATION_GIGA_DRILL_BREAKER;
-        GREEN_TERRA.subSkillTypeDefinition          = SubSkillType.HERBALISM_GREEN_TERRA;
-        SKULL_SPLITTER.subSkillTypeDefinition       = SubSkillType.AXES_SKULL_SPLITTER;
-        TREE_FELLER.subSkillTypeDefinition          = SubSkillType.WOODCUTTING_TREE_FELLER;
-        SERRATED_STRIKES.subSkillTypeDefinition     = SubSkillType.SWORDS_SERRATED_STRIKES;
-        BLAST_MINING.subSkillTypeDefinition         = SubSkillType.MINING_BLAST_MINING;
+        BERSERK.subSkillTypeDefinition = SubSkillType.UNARMED_BERSERK;
+        SUPER_BREAKER.subSkillTypeDefinition = SubSkillType.MINING_SUPER_BREAKER;
+        GIGA_DRILL_BREAKER.subSkillTypeDefinition = SubSkillType.EXCAVATION_GIGA_DRILL_BREAKER;
+        GREEN_TERRA.subSkillTypeDefinition = SubSkillType.HERBALISM_GREEN_TERRA;
+        SKULL_SPLITTER.subSkillTypeDefinition = SubSkillType.AXES_SKULL_SPLITTER;
+        TREE_FELLER.subSkillTypeDefinition = SubSkillType.WOODCUTTING_TREE_FELLER;
+        SERRATED_STRIKES.subSkillTypeDefinition = SubSkillType.SWORDS_SERRATED_STRIKES;
+        BLAST_MINING.subSkillTypeDefinition = SubSkillType.MINING_BLAST_MINING;
     }
 
     private final String abilityOn;
@@ -129,7 +130,8 @@ public enum SuperAbilityType {
     private SubSkillType subSkillTypeDefinition;
     private final String localizedName;
 
-    SuperAbilityType(String abilityOn, String abilityOff, String abilityPlayer, String abilityRefresh, String abilityPlayerOff, String localizedName) {
+    SuperAbilityType(String abilityOn, String abilityOff, String abilityPlayer,
+            String abilityRefresh, String abilityPlayerOff, String localizedName) {
         this.abilityOn = abilityOn;
         this.abilityOff = abilityOff;
         this.abilityPlayer = abilityPlayer;
@@ -167,7 +169,7 @@ public enum SuperAbilityType {
     }
 
     public String getName() {
-        return StringUtils.getPrettyAbilityString(this);
+        return StringUtils.getPrettySuperAbilityString(this);
     }
 
     public String getLocalizedName() {
@@ -214,30 +216,27 @@ public enum SuperAbilityType {
             case SUPER_BREAKER -> Permissions.superBreaker(player);
             case TREE_FELLER -> Permissions.treeFeller(player);
             // TODO: once implemented, return permissions for the following abilities
-            case EXPLOSIVE_SHOT, TRIDENTS_SUPER_ABILITY, SUPER_SHOTGUN, MACES_SUPER_ABILITY -> false;
+            case EXPLOSIVE_SHOT, TRIDENTS_SUPER_ABILITY, SUPER_SHOTGUN, MACES_SUPER_ABILITY ->
+                    false;
         };
     }
 
-    /**
-     * Check if a block is affected by this ability.
-     *
-     * @param blockState the block to check
-     * @return true if the block is affected by this ability, false otherwise
-     */
-    public boolean blockCheck(BlockState blockState) {
+    public boolean blockCheck(@NotNull Block block) {
         return switch (this) {
-            case BERSERK ->
-                    (BlockUtils.affectedByGigaDrillBreaker(blockState) || blockState.getType() == Material.SNOW || mcMMO.getMaterialMapStore().isGlass(blockState.getType()));
-            case GIGA_DRILL_BREAKER -> BlockUtils.affectedByGigaDrillBreaker(blockState);
-            case GREEN_TERRA -> BlockUtils.canMakeMossy(blockState);
-            case SUPER_BREAKER -> BlockUtils.affectedBySuperBreaker(blockState);
-            case TREE_FELLER -> BlockUtils.hasWoodcuttingXP(blockState);
+            case BERSERK -> (BlockUtils.affectedByGigaDrillBreaker(block)
+                    || block.getType() == Material.SNOW
+                    || mcMMO.getMaterialMapStore().isGlass(block.getType()));
+            case GIGA_DRILL_BREAKER -> BlockUtils.affectedByGigaDrillBreaker(block);
+            case GREEN_TERRA -> BlockUtils.canMakeMossy(block);
+            case SUPER_BREAKER -> BlockUtils.affectedBySuperBreaker(block);
+            case TREE_FELLER -> BlockUtils.hasWoodcuttingXP(block);
             default -> false;
         };
     }
 
     /**
      * Grabs the associated SubSkillType definition for this SuperAbilityType
+     *
      * @return the matching SubSkillType definition for this SuperAbilityType
      */
     public SubSkillType getSubSkillTypeDefinition() {

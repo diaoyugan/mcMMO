@@ -1,30 +1,34 @@
 package com.gmail.nossr50.datatypes.skills.alchemy;
 
+import static com.gmail.nossr50.util.PotionUtil.samePotionType;
+import static java.util.Objects.requireNonNull;
+
 import com.gmail.nossr50.mcMMO;
 import com.gmail.nossr50.util.PotionUtil;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-
-import static com.gmail.nossr50.util.PotionUtil.samePotionType;
-import static java.util.Objects.requireNonNull;
-
 public class AlchemyPotion {
     private final @NotNull String potionConfigName;
     private final @NotNull ItemStack potionItemStack;
+    private final @NotNull ItemMeta potionItemMeta;
     private final @NotNull Map<ItemStack, String> alchemyPotionChildren;
 
     public AlchemyPotion(@NotNull String potionConfigName, @NotNull ItemStack potionItemStack,
-                         @NotNull Map<ItemStack, String> alchemyPotionChildren) {
+            @NotNull Map<ItemStack, String> alchemyPotionChildren) {
         this.potionConfigName = requireNonNull(potionConfigName, "potionConfigName cannot be null");
         this.potionItemStack = requireNonNull(potionItemStack, "potionItemStack cannot be null");
-        this.alchemyPotionChildren = requireNonNull(alchemyPotionChildren, "alchemyPotionChildren cannot be null");
+        this.alchemyPotionChildren = requireNonNull(alchemyPotionChildren,
+                "alchemyPotionChildren cannot be null");
+        this.potionItemMeta = requireNonNull(potionItemStack.getItemMeta(),
+                "potionItemMeta cannot be null"); // The potion item meta should never be null because it is a potion, but if it is null, then something went terribly wrong
     }
 
     public @NotNull ItemStack toItemStack(int amount) {
@@ -49,13 +53,18 @@ public class AlchemyPotion {
     }
 
     public boolean isSimilarPotion(@NotNull ItemStack otherPotion) {
+        return isSimilarPotion(otherPotion, otherPotion.getItemMeta());
+    }
+
+    public boolean isSimilarPotion(@NotNull ItemStack otherPotion, @Nullable ItemMeta otherMeta) {
         requireNonNull(otherPotion, "otherPotion cannot be null");
+
         if (otherPotion.getType() != potionItemStack.getType()) {
             return false;
         }
 
         // no potion meta, no match
-        if (!otherPotion.hasItemMeta()) {
+        if (otherMeta == null) {
             return false;
         }
 
@@ -63,7 +72,7 @@ public class AlchemyPotion {
          * Compare custom effects on both potions.
          */
 
-        final PotionMeta otherPotionMeta = (PotionMeta) otherPotion.getItemMeta();
+        final PotionMeta otherPotionMeta = (PotionMeta) otherMeta;
         // compare custom effects on both potions, this has to be done in two traversals
         // comparing thisPotionMeta -> otherPotionMeta and otherPotionMeta -> thisPotionMeta
         if (hasDifferingCustomEffects(getAlchemyPotionMeta(), otherPotionMeta)
@@ -114,7 +123,7 @@ public class AlchemyPotion {
     }
 
     public PotionMeta getAlchemyPotionMeta() {
-        return (PotionMeta) potionItemStack.getItemMeta();
+        return (PotionMeta) potionItemMeta;
     }
 
     public boolean isSplash() {
@@ -127,10 +136,16 @@ public class AlchemyPotion {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         AlchemyPotion that = (AlchemyPotion) o;
-        return Objects.equals(potionConfigName, that.potionConfigName) && Objects.equals(potionItemStack, that.potionItemStack) && Objects.equals(alchemyPotionChildren, that.alchemyPotionChildren);
+        return Objects.equals(potionConfigName, that.potionConfigName) && Objects.equals(
+                potionItemStack, that.potionItemStack) && Objects.equals(alchemyPotionChildren,
+                that.alchemyPotionChildren);
     }
 
     @Override

@@ -1,20 +1,5 @@
 package com.gmail.nossr50.util.blockmeta;
 
-import com.gmail.nossr50.mcMMO;
-import com.gmail.nossr50.util.BlockUtils;
-import com.google.common.io.Files;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
 import static com.gmail.nossr50.util.blockmeta.BlockStoreTestUtils.LEGACY_WORLD_HEIGHT_MAX;
 import static com.gmail.nossr50.util.blockmeta.BlockStoreTestUtils.LEGACY_WORLD_HEIGHT_MIN;
 import static org.bukkit.Bukkit.getWorld;
@@ -23,9 +8,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import com.gmail.nossr50.mcMMO;
+import com.gmail.nossr50.util.BlockUtils;
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 /**
- * Could be a lot better. But some tests are better than none! Tests the major things, still kinda unit-testy. Verifies
- * that the serialization isn't completely broken.
+ * Could be a lot better. But some tests are better than none! Tests the major things, still kinda
+ * unit-testy. Verifies that the serialization isn't completely broken.
  */
 class UserBlockTrackerTest {
     private static File tempDir;
@@ -61,7 +65,7 @@ class UserBlockTrackerTest {
         when(mockWorld.getMinHeight()).thenReturn(LEGACY_WORLD_HEIGHT_MIN);
         when(mockWorld.getMaxHeight()).thenReturn(LEGACY_WORLD_HEIGHT_MAX);
     }
-    
+
     @AfterEach
     void teardownMock() {
         bukkitMock.close();
@@ -74,9 +78,15 @@ class UserBlockTrackerTest {
         final HashChunkManager hashChunkManager = new HashChunkManager();
 
         // Top Block
-        final Block illegalHeightBlock = initMockBlock(1337, 256, -1337);
-        assertFalse(hashChunkManager.isIneligible(illegalHeightBlock));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> hashChunkManager.setIneligible(illegalHeightBlock));
+        int illegalMaxHeight = 256 + 1;
+        final Block illegalHeightBlock = initMockBlock(1337, illegalMaxHeight, -1337);
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> hashChunkManager.setIneligible(illegalHeightBlock));
+
+        int illegalMinHeight = -65;
+        final Block otherIllegalHeightBlock = initMockBlock(1337, illegalMinHeight, -1337);
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> hashChunkManager.setIneligible(otherIllegalHeightBlock));
     }
 
     @Test
@@ -86,7 +96,7 @@ class UserBlockTrackerTest {
         int radius = 2; // Could be anything but drastically changes test time
 
         for (int x = -radius; x <= radius; x++) {
-            for (int y = mockWorld.getMinHeight(); y < mockWorld.getMaxHeight(); y++) {
+            for (int y = mockWorld.getMinHeight(); y <= mockWorld.getMaxHeight(); y++) {
                 for (int z = -radius; z <= radius; z++) {
                     final Block testBlock = initMockBlock(x, y, z);
                     // mark ineligible
@@ -134,22 +144,34 @@ class UserBlockTrackerTest {
     void testSimpleRegionRejectsOutOfBounds() {
         File file = new File(tempDir, "SimpleRegionRoundTrip.region");
         McMMOSimpleRegionFile region = new McMMOSimpleRegionFile(file, 0, 0);
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> region.getOutputStream(-1, 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> region.getOutputStream(0, -1));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> region.getOutputStream(32, 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> region.getOutputStream(0, 32));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> region.getOutputStream(-1, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> region.getOutputStream(0, -1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> region.getOutputStream(32, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> region.getOutputStream(0, 32));
         region.close();
     }
 
     @Test
     void testChunkStoreRejectsOutOfBounds() {
         ChunkStore chunkStore = new BitSetChunkStore(mockWorld, 0, 0);
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(-1, 0, 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(0, -1, 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(0, 0, -1));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(16, 0, 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(0, mockWorld.getMaxHeight(), 0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> chunkStore.setTrue(0, 0, 16));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(-1, 0, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(0, -1, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(0, 0, -1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(16, 0, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(0, mockWorld.getMaxHeight() + 1, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(0, mockWorld.getMinHeight() - 1, 0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> chunkStore.setTrue(0, 0, 16));
     }
 
     @Test
@@ -169,6 +191,27 @@ class UserBlockTrackerTest {
         chunkManager.setIneligible(mockBlockA);
         chunkManager.setEligible(mockBlockB);
         assertTrue(chunkManager.isIneligible(mockBlockA));
+    }
+
+    @Test
+    void testUnload() {
+        final ChunkManager chunkManager = new HashChunkManager();
+        Block mockBlockA = Mockito.mock(Block.class);
+        when(mockBlockA.getX()).thenReturn(15);
+        when(mockBlockA.getZ()).thenReturn(15);
+        when(mockBlockA.getY()).thenReturn(0);
+        when(mockBlockA.getWorld()).thenReturn(mockWorld);
+        Block mockBlockB = Mockito.mock(Block.class);
+        when(mockBlockB.getX()).thenReturn(-15);
+        when(mockBlockB.getZ()).thenReturn(-15);
+        when(mockBlockB.getY()).thenReturn(0);
+        when(mockBlockB.getWorld()).thenReturn(mockWorld);
+
+        chunkManager.setIneligible(mockBlockA);
+        chunkManager.setEligible(mockBlockB);
+        assertTrue(chunkManager.isIneligible(mockBlockA));
+
+        chunkManager.chunkUnloaded(0, 0, mockWorld);
     }
 
     @NotNull

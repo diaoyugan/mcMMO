@@ -8,13 +8,16 @@ import org.jetbrains.annotations.NotNull;
 public class NullChunkManager implements ChunkManager {
 
     @Override
-    public void closeAll() {}
+    public void closeAll() {
+    }
 
     @Override
-    public void chunkUnloaded(int cx, int cz, @NotNull World world) {}
+    public void chunkUnloaded(int cx, int cz, @NotNull World world) {
+    }
 
     @Override
-    public void unloadWorld(@NotNull World world) {}
+    public void unloadWorld(@NotNull World world) {
+    }
 
     @Override
     public boolean isIneligible(@NotNull Block block) {
@@ -28,23 +31,27 @@ public class NullChunkManager implements ChunkManager {
 
     @Override
     public boolean isEligible(@NotNull Block block) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEligible(@NotNull BlockState blockState) {
-        return false;
+        return true;
     }
 
     @Override
-    public void setIneligible(@NotNull Block block) {}
+    public void setIneligible(@NotNull Block block) {
+    }
 
     @Override
-    public void setIneligible(@NotNull BlockState blockState) {}
+    public void setIneligible(@NotNull BlockState blockState) {
+    }
 
     @Override
-    public void setEligible(@NotNull Block block) {}
+    public void setEligible(@NotNull Block block) {
+    }
 
     @Override
-    public void setEligible(@NotNull BlockState blockState) {}
+    public void setEligible(@NotNull BlockState blockState) {
+    }
 }

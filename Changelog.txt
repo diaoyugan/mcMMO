@@ -1,10 +1,205 @@
+Version 2.2.041
+    Fixed buckets being consumed by furnaces (thanks RunqRun)
+    Fixed Repair stripping unsafe enchantments from items (thanks Techirion)
+    Fixed IronGolem causing cast exceptions in rare cases (thanks Techirion)
+
+Version 2.2.040
+    Fixed hover component and action bar messages not working for 1.21.6 and 1.21.7
+    Fixed bug where entries of mctop could be duplicated when using FlatFile
+    Fixed bug where a party leader could leave a party and the party would be left without a party leader
+    Fixed a bug where EcoEnchants and similar plugins could cause an infinite loop within mcMMO during TreeFeller and other abilities
+    Added 'Happy_Ghast' to experience.yml for combat XP
+    Added 'Ghastling' to experience.yml for combat XP
+    Updated Japanese (ja_JP) translation (Thanks ryota-abe)
+    Updated Simplified Chinese (zh_CN) locale (Thanks GhostDC)
+
+Version 2.2.039
+    Added StackOverflow safeguards for abilities dealing damage in mcMMO
+    Improved compatibility with MythicMobs/ModelEngine
+    Improved compatibility with AdvancedEnchantments
+
+Version 2.2.038
+    Fix potion match failing for non-english locales
+    FoliaLib Performance improvements (thanks SirSalad)
+    Fixed situations where Rupture could never end which affected server performance
+
+Version 2.2.037
+    Fixed bug where Alchemy was not matching potions correctly and producing incorrect results (Thanks TheBentoBox)
+
+Version 2.2.036
+    Fixed a bug where Chimaera Wing could cause an exception when used
+    Fixed bug where Mob Spawners could drop in Blast Mining (thanks TomBock)
+    Fixed Spectral Arrows not granting XP for Archery or Crossbows (thanks broccolai)
+    Fixed bug where Trickshot arrows would lose their potion or custom effects
+    Added locale strings for /mcmmo help command (thanks Griffeng)
+
+Version 2.2.035
+    Support for new additions from Minecraft 1.21.5
+    Fixed bug where Blast Mining would not drop deep slate
+    Swords subskill Stab is now configurable in advanced.yml
+    Added 'Skills.Swords.Stab.Base_Damage' to advanced.yml
+    Added 'Skills.Swords.Stab.Per_Rank_Multiplier' to advanced.yml
+    Added 'Bush' to experience.yml for Herbalism
+    Added 'Bush' to config.yml Bonus Drops for Herbalism
+    Added 'Cactus_Flower' to experience.yml for Herbalism
+    Added 'Cactus_Flower' to config.yml Bonus Drops for Herbalism
+    Added 'Firefly_Bush' to experience.yml for Herbalism
+    Added 'Firefly_Bush' to config.yml Bonus Drops for Herbalism
+    Added 'Leaf_Litter' to experience.yml for Herbalism
+    Added 'Leaf_Litter' to config.yml Bonus Drops for Herbalism
+    Added 'Short_Dry_Grass' to experience.yml for Herbalism
+    Added 'Short_Dry_Grass' to config.yml Bonus Drops for Herbalism
+    Added 'Tall_Dry_Grass' to experience.yml for Herbalism
+    Added 'Tall_Dry_Grass' to config.yml Bonus Drops for Herbalism
+    Added 'Wildflowers' to experience.yml for Herbalism
+    Added 'Wildflowers' to config.yml Bonus Drops for Herbalism
+
+
+    NOTES:
+    The mob variants will use the "base" mob definition for values for now, such a a warm chicken using chicken values from experience.yml
+    The new config settings will be added automatically to advanced.yml
+
+Version 2.2.034
+    Fixed bug where mcMMO would drop items in such a way that they get stuck in an adjacent block and float to the surface
+    Fixed a rare edge case where null entities during chunk unload would cause a NullPointerException and potentially lead to server instability
+    Fixed bug where arrow would award archery xp after a crossbow trickshot bounce
+
+Version 2.2.033
+    Added Breeze_Rod entries to potions.yml for Awkward potion (see notes)
+    Added missing TURTLE_HELMET entry to potions.yml for Tier 1 ingredients
+    Added missing Wind Charging potion entries to potions.yml (see notes)
+    Fixed bug where mcMMO would attempt to load potions that required ingredients or effects from newer versions of Minecraft
+    mcMMO is a little more specific during start up of how many potions it loaded, it will now report on incompatible potions from being on an older game version.
+
+    NOTES:
+    You will have to update your potions.yml manually to receive these changes, it is highly recommended that if you haven't customized this file that you simply just delete it, mcMMO will generate a new one on the next start up and it will contain all the missing entries.
+    If you have customized this file, you can find the "default" version of this file here on the mcMMO github repo: https://github.com/mcMMO-Dev/mcMMO/blob/master/src/main/resources/potions.yml
+    You can use this file to compare it to your own and make the manual changes needed to get the new entries.
+    After making the changes to potions.yml (either via deleting it or not...) mcMMO should now recognize the Wind Charging potion and the Awkward potion created from Breeze Rods
+
+Version 2.2.032
+    Fixed bug where Roll would throw exceptions with certain CMI interactions
+    Blast Mining no longer drops infested block variants
+    Reduced bonus drops on Blast Mining and randomized results (see notes)
+    Added Beetroot to experience.yml for Herbalism
+    Added Open_Eyeblossom to experience.yml for Herbalism
+    Addeed Open_Eyeblossom to config.yml Bonus Drops for Herbalism
+    Added Closed_Eyeblossom to experience.yml for Herbalism
+    Addeed Closed_Eyeblossom to config.yml Bonus Drops for Herbalism
+
+    NOTES:
+    A balance pass for Blast Mining is coming, but for now, I've reduced the total bonus drops and clamped the yield ceiling as Blast Mining is a bit too good.
+
+Version 2.2.031
+    Fixed potential NPE when player or blockstate is null for Inventory events on Furnaces
+    Fixed bug where en_us locale was being set system-wide (thanks BlvckBytes)
+    Fixed bug where Decimal format would throw exception on non en_us systems (thanks BlvckBytes)
+    (API) Added McMMOPlayerTameEntityEvent event (thanks Warriorrr)
+
+Version 2.2.030
+    Fixed bug where rupture task could cause an exception (Thanks Wariorrrr)
+    Fixed bug where Smelting permission was needed for Alchemy XP gain
+    Fixed material based salvage permissions not functioning (Thanks Momshroom)
+
+Version 2.2.029
+    Fixed bug where block checks at world height would throw IndexOutOfBounds exceptions
+    Added Eyeblossom to experience.yml for Herbalism xp
+    Added Bonus_Drops.Herbalism.Eyeblossom to config.yml to enable double/triple drops for Eyeblossom
+    Added Pale_Hanging_Moss to experience.yml for Herbalism xp
+    Added Pale_Moss_Block to experience.yml for Herbalism xp
+    Added Pale_Moss_Carpet to experience.yml for Herbalism xp
+    Added Pale_Oak_Log to experience.yml for Woodcutting xp
+    Added Pale_Oak_Wood to experience.yml for Woodcutting xp
+    Added Stripped_Pale_Oak_Log to experience.yml for Woodcutting xp
+    Added Stripped_Pale_Oak_Wood to experience.yml for Woodcutting xp
+    Added Bonus_Drops.Woodcutting.Pale_Oak_Wood to config.yml to enable double/triple drops for Pale Oak Wood
+    Added Bonus_Drops.Woodcutting.Pale_Oak_Log to config.yml to enable double/triple drops for Pale Oak Log
+    Temporarily disabled the party item share functionality until it is fixed or potentially removed (see notes)
+
+    Notes:
+    This update adds support for the new stuff added by the "The Garden Awakens" Minecraft Update
+    I noticed some issues with the party item share feature, so I've temporarily disabled it until those issues are addressed.
+    I'm not even sure people like or dislike this feature, I'm personally not a fan.. I'd like to hear what you guys think.
+
+Version 2.2.028
+    Fixed stack overflow during ChunkUnloadEvent
+    Fixed a bug where you had to wait to summon another COTW summon if one or more of them had died or otherwise expired before their time limit
+    McMMOItemSpawnEvent#setItemStack being ignored (thanks galacticwarrior9)
+    (API) Added McMMOPlayerMasterAnglerEvent (thanks bobcat4848)
+
+Version 2.2.027
+    Added Tridents / Crossbows to salvage.vanilla.yml config (see notes)
+    Fixed an issue where Folia could have all of its threads lock up effectively killing the server
+    Fixed concurrency issue with Folia regarding locale strings
+    Fixed concurrency issue with Folia regarding COTW summons
+    Updated 'Salvage.SubSkill.ScrapCollector.Stat' to no longer mention luck being involved
+    The amount of materials from salvage are no longer luck-based, you will get a deterministic amount based on damage to the item.
+    Fixed Ricocheted arrows losing some data after a ricochet
+    Changed color of locale strings for 'Repair.Listener.Anvil' to be easier to read
+    Changed color of locale strings for 'Salvage.Listener.Anvil' to be easier to read
+
+    NOTES:
+    Tridents and Crossbows are now in the salvage.vanilla.yml config, you will need to either delete this config file to regenerate it or add the entries manually.
+    You can check the default config file after running this mcMMO update at least once in the defaults folder at plugins\mcMMO\defaults to see what you would need to add if you want to take the manual approach
+
+Version 2.2.026
+    Fixed NullPointerException on ChunkUnloadEvent
+
+Version 2.2.025
+    Fixed NullPointerException spam when processing XP for child skills
+
+Version 2.2.024
+    Fixed errors when Fishing or using Shake ability
+    Significant optimizations made to reading new chunks for mcMMO
+    Significant optimizations to most block interactions in mcMMO code
+    Fixed a horrendous edge case where Tree Feller could cause a lot of lag
+
+    Notes:
+    Part of this update focused on optimization, there's improvements of around 30% in CPU time for most code involving block interactions in mcMMO, which happens to be most code in mcMMO.
+    One of the optimizations made in this update removes an edge case where Tree Feller could cause a lot of lag, but the optimizations really are across the board in regards to any abilities that interact with blocks.
+
+Version 2.2.023
+    Compatibility with Minecraft 1.21.3
+    (API) add causingPlayer to McMMOReplaceVanillaTreasureEvent and update Fish Event to use it (thanks bobcat4848 and Jacob Cuomo)
+
+    Notes:
+    Tested this version of mcMMO against 1.21.3, 1.21.1, and 1.19.4, which should be full coverage for all the changes, but it is possible you will run into things I didn't catch.
+    Please report any errors or bugs to GitHub if you find them.
+
+Version 2.2.022
+    Fixed a bug where Roll was always reducing damage (thanks Ineusia)
+    Fix COTW errors on older versions (thanks Warriorrrr)
+    Fixed slimes spawning from slime division not inheriting tags. (thanks Ineusia)
+
+Version 2.2.021
+    Fixed issue where Roll wasn't reducing as much damage as it should have been (thanks Ineusia)
+    Updated locale_es (thanks Devilcasters)
+    Updated locale_lt_LT (thanks tautuxs)
+
+Version 2.2.020
+    (Codebase) Reworked Roll implementation (See notes)
+    (Codebase) Added unit test coverage for Roll
+    Fixed Alchemy error spam in mcMMO potion matching logic (see notes)
+    Fixed Alchemy NPE when brewing finishes
+    Fixed a bug where Roll was modifying damage unnecessarily
+    Fixed blast mining trying to drop non-items (thanks IAISI)
+
+    NOTES:
+    I'll need to rework Alchemy config logic a bit further to address some issues I've found, for now mcMMO will ignore harmless matching errors in the potion matching logic.
+    The code for Roll was a bit of a mess, I've rewritten a good chunk of it and added some unit test coverage.
+    I will likely put out another update for Acrobatics in general, as the code for Acrobatics is whack.
+    This would be a good time to suggest changes to Acrobatics on discord.
+
 Version 2.2.019
+    Optimized Alchemy code (thanks MrPowerGamerBR)
+    Fixed an exception that could occur when shooting entities through worlds (thanks Wariorrrr)
+    Fixes to en_US locale (thanks BlockMasters617)
     Maces, Crossbows, and Tridents skill commands don't warn you that they are work in progress anymore.
     Fixed IllegalArgumentException when Rupture would trigger on an entity with illegal state
 
     NOTES:
-    Maces, Crossbows, and Tridents are still in development, the change to remove that info from the skill command was to reduce the visual noise.
-    I think at this point users will get it, they are still going to have changes, you don't need to see that message everytime you use the skill command.
+    Maces, Crossbows, and Tridents are still in development, the change to remove the message from the skill command was to reduce the visual noise.
+
 Version 2.2.018
     Fixed a probability bug where certain skills would max out in chance to succeed well before they were supposed to (such as Dodge)
     Blast Mining will no longer drop mob spawners (see notes)
@@ -2525,7 +2720,7 @@ Version 2.1.38
 Version 2.1.37
     Fixed a potential IndexOutOfBoundsException when informing a disconnected player that their Blast Mining was off CD
     Updated hu_HU locale (thanks andris)
-    
+
 Version 2.1.36
     Updated German locale (Thanks OverCrave)
     Fixed a bug preventing Villagers from giving combat XP
@@ -3065,7 +3260,7 @@ Version 1.5.01
  = Fixed bug where pistons would mess with the block tracking
  = Fixed bug where the Updater was running on the main thread.
  = Fixed bug when players would use /ptp without being in a party
- = Fixed bug where player didn't have a mcMMOPlayer object in AsyncPlayerChatEvent
+ = Fixed bug where player didn't have a mmoPlayer object in AsyncPlayerChatEvent
  = Fixed bug where dodge would check the wrong player skill level
  = Fixed bug which causes /party teleport to stop working
  = Fixed bug where SaveTimerTask would produce an IndexOutOfBoundsException
@@ -3513,7 +3708,7 @@ Version 1.3.13
  + Added displaying bonus perks on skill commands
  + Added config option to disable gaining Acrobatics XP from dodging lightning
  + Added missing skill guides. They're finally here!
- + Added more localization 
+ + Added more localization
  + Added a very secret easter egg
  = Fix issue with Sand/Gravel tracking
  = Fix possible NPE when using the PartyAPI to add a player to a party that doesn't exist.
@@ -3610,7 +3805,7 @@ Version 1.3.11
  = Fixed bug where mcMMO could throw NPE errors if trees cut down were from a custom mod and had an id of 17
  = Fixed dupe bug where mcMMO would ignore other block-protection plugins for various abilities
  = Fixed NPE with hardcore mode's vampirism
- 
+
 Version 1.3.10
  + Added 1.3.1 compatibility
  + Added permission node for Iron Grip ability (mcmmo.ability.unarmed.irongrip)
@@ -3872,7 +4067,7 @@ Version 1.3.02
 Version 1.3.01
  = Fixed bug where Tree Feller had no cooldown
  = Fixed bug with activating Skull Splitter after using Tree Feller
- 
+
 Version 1.3.00
  + Added ability to customize drops for Excavation skill (treasures.yml)
  + Added ability to customize drops for Fishing skill (treasures.yml)
@@ -3936,7 +4131,7 @@ Version 1.3.00
  - Removed unused settings from config.yml (HP Regen)
  - Removed Nether Brick from Mining XP Tables
  - Removed Stone Brick from Mining XP Tables
- 
+
 Version 1.2.12
  - Fixed issue that caused terrible MySQL performance and negative XP on levelup (Issue #134)
  - Fixed addxp command taking xprate and skill modifiers into account
@@ -4945,7 +5140,7 @@ Version 0.5.9
 Version 0.5.8
 
     Fixed bug where players inventories would dupe during combat
-    
+
 Version 0.5.7
 
     Fixed monsters instant killing players

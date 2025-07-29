@@ -1,5 +1,12 @@
 package com.gmail.nossr50;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+
 import com.gmail.nossr50.api.exceptions.InvalidSkillException;
 import com.gmail.nossr50.config.AdvancedConfig;
 import com.gmail.nossr50.config.ChatConfig;
@@ -11,27 +18,36 @@ import com.gmail.nossr50.datatypes.player.McMMOPlayer;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 import com.gmail.nossr50.datatypes.skills.SubSkillType;
-import com.gmail.nossr50.util.*;
+import com.gmail.nossr50.util.EventUtils;
+import com.gmail.nossr50.util.MaterialMapStore;
+import com.gmail.nossr50.util.Misc;
+import com.gmail.nossr50.util.Permissions;
+import com.gmail.nossr50.util.TransientEntityTracker;
 import com.gmail.nossr50.util.blockmeta.ChunkManager;
 import com.gmail.nossr50.util.compat.CompatibilityManager;
 import com.gmail.nossr50.util.platform.MinecraftGameVersion;
+import com.gmail.nossr50.util.player.NotificationManager;
 import com.gmail.nossr50.util.player.UserManager;
 import com.gmail.nossr50.util.skills.RankUtils;
 import com.gmail.nossr50.util.skills.SkillTools;
-import org.bukkit.*;
+import com.gmail.nossr50.util.sounds.SoundManager;
+import java.util.UUID;
+import java.util.logging.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public abstract class MMOTestEnvironment {
     protected MockedStatic<Bukkit> mockedBukkit;
@@ -42,8 +58,9 @@ public abstract class MMOTestEnvironment {
     protected MockedStatic<RankUtils> mockedRankUtils;
     protected MockedStatic<UserManager> mockedUserManager;
     protected MockedStatic<Misc> mockedMisc;
-    protected MockedStatic<SkillTools> mockedSkillTools;
     protected MockedStatic<EventUtils> mockedEventUtils;
+    protected MockedStatic<NotificationManager> notificationManager;
+    protected MockedStatic<SoundManager> mockedSoundManager;
     protected TransientEntityTracker transientEntityTracker;
     protected AdvancedConfig advancedConfig;
     protected PartyConfig partyConfig;
@@ -63,7 +80,6 @@ public abstract class MMOTestEnvironment {
     protected PlayerInventory playerInventory;
     protected PlayerProfile playerProfile;
     protected McMMOPlayer mmoPlayer;
-    protected String playerName = "testPlayer";
     protected ItemFactory itemFactory;
 
     protected ChunkManager chunkManager;
@@ -85,10 +101,6 @@ public abstract class MMOTestEnvironment {
         // place store
         chunkManager = mock(ChunkManager.class);
         when(mcMMO.getUserBlockTracker()).thenReturn(chunkManager);
-
-        // shut off mod manager for woodcutting
-        when(mcMMO.getModManager()).thenReturn(mock(ModManager.class));
-        when(mcMMO.getModManager().isCustomLog(any())).thenReturn(false);
 
         // chat config
         mockedChatConfig = mockStatic(ChatConfig.class);
@@ -124,29 +136,50 @@ public abstract class MMOTestEnvironment {
         this.server = mock(Server.class);
         when(mcMMO.p.getServer()).thenReturn(server);
 
+        // wire Bukkit
         mockedBukkit = mockStatic(Bukkit.class);
         when(Bukkit.getItemFactory()).thenReturn(itemFactory);
         itemFactory = mock(ItemFactory.class);
-        // when(itemFactory.getItemMeta(any())).thenReturn(mock(ItemMeta.class));
+
+        // wire Bukkit call to get server
+        when(Bukkit.getServer()).thenReturn(server);
 
         // wire plugin manager
         this.pluginManager = mock(PluginManager.class);
+        // wire server -> plugin manager
         when(server.getPluginManager()).thenReturn(pluginManager);
+        // wire Bukkit -> plugin manager
+        when(Bukkit.getPluginManager()).thenReturn(pluginManager);
+        // return the argument provided when call event is invoked on plugin manager mock
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            return args[0];
+        }).when(pluginManager).callEvent(any(Event.class));
 
         // wire world
         this.world = mock(World.class);
 
         // wire Misc
         this.mockedMisc = mockStatic(Misc.class);
-        when(Misc.getBlockCenter(any())).thenReturn(new Location(world, 0, 0, 0));
+        when(Misc.getBlockCenter(any(Block.class))).thenReturn(new Location(world, 0, 0, 0));
+        when(Misc.getBlockCenter(any(BlockState.class))).thenReturn(new Location(world, 0, 0, 0));
 
         // setup player and player related mocks after everything else
         this.player = mock(Player.class);
         when(player.getUniqueId()).thenReturn(playerUUID);
-
+        when(player.isValid()).thenReturn(true);
+        when(player.isOnline()).thenReturn(true);
+        // health
+        when(player.getHealth()).thenReturn(20D);
         // wire inventory
         this.playerInventory = mock(PlayerInventory.class);
         when(player.getInventory()).thenReturn(playerInventory);
+        // player location
+        Location playerLocation = mock(Location.class);
+        Block playerLocationBlock = mock(Block.class);
+        when(player.getLocation()).thenReturn(playerLocation);
+        when(playerLocation.getBlock()).thenReturn(playerLocationBlock);
+        // when(playerLocationBlock.getType()).thenReturn(Material.AIR);
 
         // PlayerProfile and McMMOPlayer are partially mocked
         playerProfile = new PlayerProfile("testPlayer", player.getUniqueId(), 0);
@@ -158,15 +191,26 @@ public abstract class MMOTestEnvironment {
 
         this.materialMapStore = new MaterialMapStore();
         when(mcMMO.getMaterialMapStore()).thenReturn(materialMapStore);
+
+        // wire notification manager
+        notificationManager = mockStatic(NotificationManager.class);
+
+        // wire sound manager
+        mockedSoundManager = mockStatic(SoundManager.class);
     }
 
     private void mockPermissions() {
         mockedPermissions = mockStatic(Permissions.class);
-        when(Permissions.isSubSkillEnabled(any(Player.class), any(SubSkillType.class))).thenReturn(true);
-        when(Permissions.canUseSubSkill(any(Player.class), any(SubSkillType.class))).thenReturn(true);
-        when(Permissions.isSubSkillEnabled(any(Player.class), any(SubSkillType.class))).thenReturn(true);
-        when(Permissions.canUseSubSkill(any(Player.class), any(SubSkillType.class))).thenReturn(true);
-        when(Permissions.lucky(player, PrimarySkillType.WOODCUTTING)).thenReturn(false); // player is not lucky
+        when(Permissions.isSubSkillEnabled(any(Player.class), any(SubSkillType.class))).thenReturn(
+                true);
+        when(Permissions.canUseSubSkill(any(Player.class), any(SubSkillType.class))).thenReturn(
+                true);
+        when(Permissions.isSubSkillEnabled(any(Player.class), any(SubSkillType.class))).thenReturn(
+                true);
+        when(Permissions.canUseSubSkill(any(Player.class), any(SubSkillType.class))).thenReturn(
+                true);
+        when(Permissions.lucky(player, PrimarySkillType.WOODCUTTING)).thenReturn(
+                false); // player is not lucky
     }
 
     private void mockRankConfig() {
@@ -181,7 +225,8 @@ public abstract class MMOTestEnvironment {
     private void mockGeneralConfig() {
         generalConfig = mock(GeneralConfig.class);
         when(generalConfig.getTreeFellerThreshold()).thenReturn(100);
-        when(generalConfig.getDoubleDropsEnabled(PrimarySkillType.WOODCUTTING, Material.OAK_LOG)).thenReturn(true);
+        when(generalConfig.getDoubleDropsEnabled(PrimarySkillType.WOODCUTTING,
+                Material.OAK_LOG)).thenReturn(true);
         when(generalConfig.getLocale()).thenReturn("en_US");
         when(mcMMO.p.getGeneralConfig()).thenReturn(generalConfig);
     }
@@ -201,7 +246,7 @@ public abstract class MMOTestEnvironment {
         when(ExperienceConfig.getInstance().getCombatXP("Cow")).thenReturn(1D);
     }
 
-    protected void cleanupBaseEnvironment() {
+    protected void cleanUpStaticMocks() {
         // Clean up resources here if needed.
         if (mockedMcMMO != null) {
             mockedMcMMO.close();
@@ -229,6 +274,12 @@ public abstract class MMOTestEnvironment {
         }
         if (mockedBukkit != null) {
             mockedBukkit.close();
+        }
+        if (notificationManager != null) {
+            notificationManager.close();
+        }
+        if (mockedSoundManager != null) {
+            mockedSoundManager.close();
         }
     }
 }
